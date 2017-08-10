@@ -1,0 +1,15 @@
+*.pyc
+*.pyo
+*.*~
+env/*
+.env/
+
+.idea/
+
+gitolite/
+
+db.sqlite3
+*.sqlite3
+db/*.sqlite3
+
+local_settings.py
