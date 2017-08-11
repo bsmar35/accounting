@@ -15,7 +15,10 @@ class AccountSerializer(serializers.ModelSerializer):
                               validated_data.get('email'),
                               validated_data.get('passport_number'))
 
-        return model_to_dict(account)
+        return dict(first_name=account.first_name,
+                    last_name=account.last_name,
+                    email=account.email,
+                    pin=account.pin)
 
 
 class AccountLoginSerializer(serializers.ModelSerializer):
