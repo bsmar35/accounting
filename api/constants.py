@@ -8,4 +8,3 @@ class AccountState(object):
 class ApprovementState(object):
     WaitingForActivate = 1
     WaitingForDelete = 2
-    Closed = 3

@@ -1,10 +1,10 @@
 from api.models import Account
+from api.permissions import AccountOnly
 from api.serializers import AccountSerializer, AccountLoginSerializer
 from django.contrib.auth import login
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions
 
 
 class AccountRegister(APIView):
@@ -31,7 +31,7 @@ class AccountLogin(APIView):
 
         account = Account.objects.filter(**serializer.validated_data).first()
         if account is not None:
-            if account.is_active:
+            if account.is_activated:
                 login(request, account)
                 return Response(status=status.HTTP_200_OK)
             else:
@@ -45,7 +45,7 @@ class ViewAccountBalance(APIView):
     View account balances
     """
 
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (AccountOnly,)
 
     def get(self, request, pk):
         account = Account.objects.get(pk=pk)
@@ -57,7 +57,7 @@ class LeaveSystem(APIView):
     """
     Leave system bid
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (AccountOnly,)
 
     def get(self, request, pk):
         account = Account.objects.get(pk=pk)

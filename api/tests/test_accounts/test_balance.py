@@ -1,3 +1,4 @@
+from api.constants import AccountState
 from api.models import Account, AccountBalance
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -11,6 +12,7 @@ class TestBalance(TestCase):
             last_name='Lindon',
             email='mail@mail.com',
             passport_number='sh112332',
+            state=AccountState.Active,
             pin=8527
         )
 

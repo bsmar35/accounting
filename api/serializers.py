@@ -28,3 +28,9 @@ class ApprovementBidSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApprovementBid
         fields = ('created', 'state', 'account')
+
+
+class ManagerLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('email', 'password')

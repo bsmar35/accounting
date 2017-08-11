@@ -1,9 +1,11 @@
 from datetime import datetime
-from api.constants import AccountState, ApprovementState
+from random import randint
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.db import models
-from random import randint
 from django.db import transaction
+
+from api.constants import AccountState, ApprovementState
 
 
 class Account(User):
@@ -14,6 +16,10 @@ class Account(User):
 
     def __unicode__(self):
         return u'{}'.format(self.email)
+
+    @property
+    def is_activated(self):
+        return self.state == AccountState.Active
 
     @staticmethod
     @transaction.atomic
@@ -38,6 +44,12 @@ class Account(User):
             state=ApprovementState.WaitingForActivate
         )
 
+        send_mail('Approvement bid',
+                  'New account',
+                  'account_team@example.com',
+                  [m.email for m in Manager.objects.all()],  # todo move to setting responsible manager
+                  fail_silently=False)
+
         return account
 
     @transaction.atomic
@@ -49,6 +61,19 @@ class Account(User):
             account=self,
             state=ApprovementState.WaitingForDelete
         )
+
+        send_mail('Approvement bid',
+                  'System leave',
+                  'account_team@example.com',
+                  [m.email for m in Manager.objects.all()],  # todo move to setting responsible manager
+                  fail_silently=False)
+
+    def to_dict(self):
+        return dict(id=self.id,
+                    first_name=self.first_name,
+                    last_name=self.last_name,
+                    email=self.email,
+                    state=self.state)
 
 
 class Manager(User):
@@ -64,15 +89,22 @@ class ApprovementBid(models.Model):
 
     @transaction.atomic
     def process(self):
+        message = ''
         if self.state == ApprovementState.WaitingForActivate:
             self.account.state = AccountState.Active
+            message = 'Account activated'
         elif self.state == ApprovementState.WaitingForDelete:
-            self.account.state = ApprovementState.Closed
+            self.account.state = AccountState.Closed
+            message = 'Account closed'
 
         self.account.save()
         self.processed = datetime.now()
-        self.state = ApprovementState.Closed
         self.save()
+        send_mail('Approvement',
+                  message,
+                  'account_team@example.com',
+                  ['self.account.email'],
+                  fail_silently=False)
 
 
 class AccountBalance(models.Model):

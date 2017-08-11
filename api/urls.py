@@ -12,4 +12,6 @@ urlpatterns = [
 urlpatterns += [
     url(r'^managers/register$', managers.ApprovementBidList.as_view(), name='bids'),
     url(r'^managers/bids/(?P<pk>[0-9]+)', managers.ProcessApprovementBid.as_view(), name='process_bid'),
+    url(r'^managers/closed_accounts', managers.ClosedAccountsList.as_view(), name='closed_accounts'),
+    url(r'^managers/login$', managers.ManagerLogin.as_view(), name='manager_login'),
 ]
